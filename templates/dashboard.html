@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Parking System</title>
+<meta http-equiv="refresh" content="2">
+<style>
+body {
+    background:#0f172a;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
+
+.container {
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:20px;
+    margin-top:30px;
+}
+
+.card {
+    width:260px;
+    padding:30px;
+    border-radius:15px;
+    font-size:22px;
+}
+
+.free { background:#16a34a; }
+.occupied { background:#dc2626; }
+.normal { background:#1e293b; }
+.warning { background:#eab308; }
+.danger { background:#b91c1c; }
+.purple { background:#7c3aed; }
+
+.events {
+    margin-top:40px;
+    background:#1e293b;
+    padding:20px;
+    border-radius:15px;
+    width:80%;
+    margin-left:auto;
+    margin-right:auto;
+}
+</style>
+</head>
+
+<body>
+
+<h1>SMART PARKING SYSTEM</h1>
+
+<div class="container">
+
+<div id="spot1" class="card normal">Spot 1</div>
+<div id="spot2" class="card normal">Spot 2</div>
+<div id="spot3" class="card normal">Spot 3</div>
+<div id="co2" class="card normal">CO₂</div>
+<div id="gate" class="card purple">Gate</div>
+
+</div>
+
+<div class="events">
+<h2>System Log</h2>
+<div id="log"></div>
+</div>
+
+<script>
+function update() {
+fetch("/data")
+.then(res=>res.json())
+.then(data=>{
+
+function setSpot(id,value){
+let el=document.getElementById(id);
+el.innerHTML=id.toUpperCase()+"<br>"+value;
+el.className="card "+(value=="FREE"?"free":"occupied");
+}
+
+setSpot("spot1",data.spot1);
+setSpot("spot2",data.spot2);
+setSpot("spot3",data.spot3);
+
+let co2=document.getElementById("co2");
+co2.innerHTML="CO₂<br>"+data.co2;
+
+if(data.co2<300)
+co2.className="card normal";
+else if(data.co2<600)
+co2.className="card warning";
+else
+co2.className="card danger";
+
+document.getElementById("gate").innerHTML="Gate<br>"+data.gate;
+
+let log="";
+data.events.forEach(e=>log+=e+"<br>");
+document.getElementById("log").innerHTML=log;
+
+});
+}
+
+setInterval(update,2000);
+update();
+</script>
+
+</body>
+</html>
